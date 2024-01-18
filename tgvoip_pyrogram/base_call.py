@@ -114,7 +114,7 @@ class VoIPCallBase:
                                        udp_reflector=True, library_versions=["2.4.4", "2.7"])
 
     async def get_dhc(self):
-        self.dhc = DH(await self.client.send(functions.messages.GetDhConfig(version=0, random_length=256)))
+        self.dhc = DH(await self.client.invoke(functions.messages.GetDhConfig(version=0, random_length=256)))
 
     def check_g(self, g_x: int, p: int) -> None:
         try:
@@ -171,7 +171,7 @@ class VoIPCallBase:
         if not reason:
             reason = types.PhoneCallDiscardReasonDisconnect()
         try:
-            await self.client.send(functions.phone.DiscardCall(
+            await self.client.invoke(functions.phone.DiscardCall(
                 peer=types.InputPhoneCall(id=self.call_id, access_hash=self.call_access_hash),
                 duration=self.ctrl.call_duration,
                 connection_id=self.ctrl.get_preferred_relay_id(),
@@ -182,7 +182,7 @@ class VoIPCallBase:
         self.call_ended()
 
     async def _initiate_encrypted_call(self) -> None:
-        config = await self.client.send(functions.help.GetConfig())  # type: types.Config
+        config = await self.client.invoke(functions.help.GetConfig())  # type: types.Config
         self.ctrl.set_config(config.call_packet_timeout_ms / 1000., config.call_connect_timeout_ms / 1000.,
                              DataSaving.NEVER, self.call.id)
         self.ctrl.set_encryption_key(self.auth_key_bytes, self.is_outgoing)

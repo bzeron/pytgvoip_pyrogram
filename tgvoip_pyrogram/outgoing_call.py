@@ -44,7 +44,7 @@ class VoIPOutgoingCall(VoIPCallBase):
         self.a = randint(2, self.dhc.p-1)
         self.g_a = pow(self.dhc.g, self.a, self.dhc.p)
         self.g_a_hash = hashlib.sha256(i2b(self.g_a)).digest()
-        self.call = (await self.client.send(functions.phone.RequestCall(
+        self.call = (await self.client.invoke(functions.phone.RequestCall(
             user_id=self.peer,
             random_id=randint(0, 0x7fffffff - 1),
             g_a_hash=self.g_a_hash,
@@ -73,7 +73,7 @@ class VoIPOutgoingCall(VoIPCallBase):
         self.check_g(self.g_b, self.dhc.p)
         self.auth_key = pow(self.g_b, self.a, self.dhc.p)
         self.key_fingerprint = calc_fingerprint(self.auth_key_bytes)
-        self.call = (await self.client.send(functions.phone.ConfirmCall(
+        self.call = (await self.client.invoke(functions.phone.ConfirmCall(
             key_fingerprint=self.key_fingerprint,
             peer=types.InputPhoneCall(id=self.call.id, access_hash=self.call_access_hash),
             g_a=i2b(self.g_a),

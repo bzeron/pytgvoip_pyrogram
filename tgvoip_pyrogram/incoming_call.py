@@ -58,7 +58,7 @@ class VoIPIncomingCall(VoIPCallBase):
         self.g_b = pow(self.dhc.g, self.b, self.dhc.p)
         self.g_a_hash = self.call.g_a_hash
         try:
-            self.call = (await self.client.send(functions.phone.AcceptCall(
+            self.call = (await self.client.invoke(functions.phone.AcceptCall(
                 peer=types.InputPhoneCall(id=self.call_id, access_hash=self.call_access_hash),
                 g_b=i2b(self.g_b),
                 protocol=self.get_protocol()
