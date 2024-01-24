@@ -19,9 +19,8 @@ import asyncio
 
 import pyrogram
 from pyrogram import errors
-from pyrogram.raw import functions, types
 from pyrogram.handlers import RawUpdateHandler
-
+from pyrogram.raw import functions, types
 from tgvoip import VoIPController, CallState, CallError, Endpoint, DataSaving, VoIPServerConfig
 from tgvoip.utils import i2b, b2i, check_g
 
@@ -34,7 +33,7 @@ class DH:
 
 
 class VoIPCallBase:
-    min_layer = 65
+    min_layer = 92
     max_layer = VoIPController.CONNECTION_MAX_LAYER
     is_outgoing = False
 
@@ -92,7 +91,7 @@ class VoIPCallBase:
         return func
 
     def on_call_ended(self, func: callable) -> callable:  # call was discarded with non-busy reason
-                                                          # (was started and then discarded?)
+        # (was started and then discarded?)
         self.call_ended_handlers.append(func)
         return func
 
@@ -111,7 +110,7 @@ class VoIPCallBase:
 
     def get_protocol(self) -> types.PhoneCallProtocol:
         return types.PhoneCallProtocol(min_layer=self.min_layer, max_layer=self.max_layer, udp_p2p=True,
-                                       udp_reflector=True, library_versions=["2.4.4", "2.7"])
+                                       udp_reflector=True, library_versions=["4.0.0"])
 
     async def get_dhc(self):
         self.dhc = DH(await self.client.invoke(functions.messages.GetDhConfig(version=0, random_length=256)))
@@ -129,6 +128,7 @@ class VoIPCallBase:
                 self.client.remove_handler(self._update_handler, -1)
             except ValueError:
                 pass
+
         asyncio.ensure_future(_())
 
         del self.ctrl
